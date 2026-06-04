@@ -9,12 +9,16 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { CalendarBlank, X } from 'phosphor-react-native';
 import { colors, rounded, spacing, typography } from '@/theme';
+import { dateToUnix, formatDate } from '@/utils/date';
 
 type Props = {
   initialTitle?: string;
   initialDescription?: string;
-  onSubmit: (title: string, description: string | null) => Promise<void>;
+  initialDueDate?: number | null;
+  onSubmit: (title: string, description: string | null, dueDate: number | null) => Promise<void>;
   onCancel: () => void;
   submitLabel?: string;
 };
@@ -22,12 +26,15 @@ type Props = {
 export function ChecklistForm({
   initialTitle = '',
   initialDescription = '',
+  initialDueDate = null,
   onSubmit,
   onCancel,
   submitLabel = 'Salvar',
 }: Props) {
   const [title, setTitle] = useState(initialTitle);
   const [description, setDescription] = useState(initialDescription);
+  const [dueDate, setDueDate] = useState<number | null>(initialDueDate);
+  const [showPicker, setShowPicker] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
@@ -38,7 +45,7 @@ export function ChecklistForm({
     }
     setSaving(true);
     setError('');
-    await onSubmit(title.trim(), description.trim() || null);
+    await onSubmit(title.trim(), description.trim() || null, dueDate);
     setSaving(false);
   }
 
@@ -74,6 +81,39 @@ export function ChecklistForm({
           maxLength={200}
         />
       </View>
+
+      <View style={styles.field}>
+        <Text style={styles.label}>Prazo</Text>
+        {dueDate ? (
+          <View style={styles.dateRow}>
+            <View style={styles.datePill}>
+              <CalendarBlank size={14} color={colors.ink} weight="regular" />
+              <Text style={styles.dateText}>{formatDate(dueDate)}</Text>
+            </View>
+            <TouchableOpacity onPress={() => setDueDate(null)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+              <X size={16} color={colors.ash} weight="regular" />
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <TouchableOpacity style={styles.dateBtn} onPress={() => setShowPicker(true)}>
+            <CalendarBlank size={16} color={colors.mute} weight="regular" />
+            <Text style={styles.dateBtnText}>Definir prazo</Text>
+          </TouchableOpacity>
+        )}
+      </View>
+
+      {showPicker && (
+        <DateTimePicker
+          value={dueDate ? new Date(dueDate * 1000) : new Date()}
+          mode="date"
+          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+          minimumDate={new Date()}
+          onChange={(_, selected) => {
+            setShowPicker(Platform.OS === 'ios');
+            if (selected) setDueDate(dateToUnix(selected));
+          }}
+        />
+      )}
 
       <View style={styles.actions}>
         <TouchableOpacity style={styles.btnCancel} onPress={onCancel}>
@@ -129,6 +169,42 @@ const styles = StyleSheet.create({
   error: {
     ...typography.captionSm,
     color: colors.accentRed,
+  },
+  dateBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    backgroundColor: colors.surfaceCard,
+    borderWidth: 1,
+    borderColor: colors.hairline,
+    borderRadius: rounded.md,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    alignSelf: 'flex-start',
+  },
+  dateBtnText: {
+    ...typography.bodyMd,
+    color: colors.mute,
+  },
+  dateRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  datePill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    backgroundColor: colors.surfaceCard,
+    borderWidth: 1,
+    borderColor: colors.hairline,
+    borderRadius: rounded.md,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+  },
+  dateText: {
+    ...typography.bodyMd,
+    color: colors.ink,
   },
   actions: {
     flexDirection: 'row',

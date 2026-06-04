@@ -1,5 +1,6 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { colors, rounded, spacing, typography } from '@/theme';
+import { DueDateBadge } from './DueDateBadge';
 import type { ChecklistWithProgress } from '@/types';
 
 type Props = {
@@ -9,7 +10,7 @@ type Props = {
 };
 
 export function ChecklistCard({ checklist, onPress, onLongPress }: Props) {
-  const { title, description, total_items, done_items } = checklist;
+  const { title, description, total_items, done_items, due_date } = checklist;
   const progress = total_items > 0 ? done_items / total_items : 0;
   const isCompleted = total_items > 0 && done_items === total_items;
 
@@ -27,6 +28,8 @@ export function ChecklistCard({ checklist, onPress, onLongPress }: Props) {
       {description ? (
         <Text style={styles.description} numberOfLines={2}>{description}</Text>
       ) : null}
+
+      {due_date ? <DueDateBadge dueDate={due_date} /> : null}
 
       {total_items > 0 && (
         <View style={styles.progressTrack}>

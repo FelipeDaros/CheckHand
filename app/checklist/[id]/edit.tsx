@@ -19,8 +19,8 @@ export default function EditChecklistScreen() {
     getChecklistById(db, Number(id)).then(setChecklist);
   }, [db, id]);
 
-  async function handleSubmit(title: string, description: string | null) {
-    await update(Number(id), title, description);
+  async function handleSubmit(title: string, description: string | null, dueDate: number | null) {
+    await update(Number(id), title, description, dueDate);
     router.back();
   }
 
@@ -36,6 +36,7 @@ export default function EditChecklistScreen() {
     <ChecklistForm
       initialTitle={checklist.title}
       initialDescription={checklist.description ?? ''}
+      initialDueDate={checklist.due_date}
       onSubmit={handleSubmit}
       onCancel={() => router.back()}
       submitLabel="Salvar"

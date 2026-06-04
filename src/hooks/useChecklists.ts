@@ -45,16 +45,16 @@ export function useChecklists() {
   }, [checklists, query, filter]);
 
   const add = useCallback(
-    async (title: string, description?: string | null) => {
-      await createChecklist(db, title, description);
+    async (title: string, description?: string | null, dueDate?: number | null) => {
+      await createChecklist(db, title, description, dueDate);
       await load();
     },
     [db, load],
   );
 
   const update = useCallback(
-    async (id: number, title: string, description?: string | null) => {
-      await updateChecklist(db, id, title, description);
+    async (id: number, title: string, description?: string | null, dueDate?: number | null) => {
+      await updateChecklist(db, id, title, description, dueDate);
       await load();
     },
     [db, load],

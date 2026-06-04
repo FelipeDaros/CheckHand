@@ -1,6 +1,7 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Trash } from 'phosphor-react-native';
 import { colors, rounded, spacing, typography } from '@/theme';
+import { DueDateBadge } from './DueDateBadge';
 import type { Item } from '@/types';
 
 type Props = {
@@ -22,9 +23,12 @@ export function ItemRow({ item, onToggle, onDelete }: Props) {
         {isDone && <Text style={styles.checkmark}>✓</Text>}
       </TouchableOpacity>
 
-      <Text style={[styles.title, isDone && styles.titleDone]} numberOfLines={2}>
-        {item.title}
-      </Text>
+      <View style={styles.content}>
+        <Text style={[styles.title, isDone && styles.titleDone]} numberOfLines={2}>
+          {item.title}
+        </Text>
+        {item.due_date ? <DueDateBadge dueDate={item.due_date} /> : null}
+      </View>
 
       <TouchableOpacity
         onPress={() => onDelete(item.id)}
@@ -67,8 +71,11 @@ const styles = StyleSheet.create({
     color: colors.onPrimary,
     lineHeight: 16,
   },
-  title: {
+  content: {
     flex: 1,
+    gap: spacing.xxs,
+  },
+  title: {
     ...typography.bodyMd,
     color: colors.ink,
   },

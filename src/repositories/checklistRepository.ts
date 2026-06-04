@@ -29,11 +29,13 @@ export async function createChecklist(
   db: SQLiteDatabase,
   title: string,
   description?: string | null,
+  dueDate?: number | null,
 ): Promise<number> {
   const result = await db.runAsync(
-    'INSERT INTO checklists (title, description) VALUES (?, ?)',
+    'INSERT INTO checklists (title, description, due_date) VALUES (?, ?, ?)',
     title,
     description ?? null,
+    dueDate ?? null,
   );
   return result.lastInsertRowId;
 }
@@ -43,11 +45,13 @@ export async function updateChecklist(
   id: number,
   title: string,
   description?: string | null,
+  dueDate?: number | null,
 ): Promise<void> {
   await db.runAsync(
-    'UPDATE checklists SET title = ?, description = ?, updated_at = unixepoch() WHERE id = ?',
+    'UPDATE checklists SET title = ?, description = ?, due_date = ?, updated_at = unixepoch() WHERE id = ?',
     title,
     description ?? null,
+    dueDate ?? null,
     id,
   );
 }

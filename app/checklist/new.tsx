@@ -6,8 +6,8 @@ export default function NewChecklistScreen() {
   const router = useRouter();
   const { add } = useChecklists();
 
-  async function handleSubmit(title: string, description: string | null) {
-    await add(title, description);
+  async function handleSubmit(title: string, description: string | null, dueDate: number | null) {
+    await add(title, description, dueDate);
     router.back();
   }
 
