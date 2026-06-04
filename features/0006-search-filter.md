@@ -74,7 +74,7 @@ src/
 
 ## Tasks
 
-- [ ] Criar `src/components/SearchBar.tsx`
+- [x] Criar `src/components/SearchBar.tsx`
 - [ ] Criar `src/components/FilterTabs.tsx`
 - [ ] Adicionar lógica de filtro em `useChecklists.ts`
 - [ ] Integrar busca + filtros em `app/(tabs)/index.tsx`

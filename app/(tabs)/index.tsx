@@ -2,12 +2,14 @@ import { Alert, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react
 import { useRouter } from 'expo-router';
 import { Plus } from 'phosphor-react-native';
 import { ChecklistCard } from '@/components/ChecklistCard';
+import { FilterTabs } from '@/components/FilterTabs';
+import { SearchBar } from '@/components/SearchBar';
 import { useChecklists } from '@/hooks/useChecklists';
 import { colors, rounded, spacing, typography } from '@/theme';
 
 export default function ChecklistsScreen() {
   const router = useRouter();
-  const { checklists, loading, remove } = useChecklists();
+  const { checklists, loading, query, setQuery, filter, setFilter, remove } = useChecklists();
 
   function handleDelete(id: number, title: string) {
     Alert.alert(
@@ -22,6 +24,11 @@ export default function ChecklistsScreen() {
 
   return (
     <View style={styles.container}>
+      <View style={styles.toolbar}>
+        <SearchBar value={query} onChangeText={setQuery} placeholder="Buscar checklist..." />
+        <FilterTabs active={filter} onChange={setFilter} />
+      </View>
+
       <FlatList
         data={checklists}
         keyExtractor={(item) => String(item.id)}
@@ -36,9 +43,13 @@ export default function ChecklistsScreen() {
         ListEmptyComponent={
           loading ? null : (
             <View style={styles.empty}>
-              <Text style={styles.emptyTitle}>Nenhuma checklist ainda</Text>
+              <Text style={styles.emptyTitle}>
+                {query || filter !== 'all' ? 'Nenhum resultado' : 'Nenhuma checklist ainda'}
+              </Text>
               <Text style={styles.emptySubtitle}>
-                Toque no botão + para criar sua primeira lista
+                {query || filter !== 'all'
+                  ? 'Tente outro filtro ou termo de busca'
+                  : 'Toque no botão + para criar sua primeira lista'}
               </Text>
             </View>
           )
@@ -60,6 +71,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.canvas,
+  },
+  toolbar: {
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.md,
+    paddingBottom: spacing.sm,
+    gap: spacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.hairlineSoft,
   },
   list: {
     padding: spacing.lg,

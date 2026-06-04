@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useFocusEffect } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import {
@@ -8,11 +8,14 @@ import {
   deleteChecklist,
 } from '@/repositories/checklistRepository';
 import type { ChecklistWithProgress } from '@/types';
+import type { FilterOption } from '@/components/FilterTabs';
 
 export function useChecklists() {
   const db = useSQLiteContext();
   const [checklists, setChecklists] = useState<ChecklistWithProgress[]>([]);
   const [loading, setLoading] = useState(true);
+  const [query, setQuery] = useState('');
+  const [filter, setFilter] = useState<FilterOption>('all');
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -26,6 +29,20 @@ export function useChecklists() {
       load();
     }, [load]),
   );
+
+  const filtered = useMemo(() => {
+    let result = checklists;
+    if (query.trim()) {
+      const q = query.toLowerCase();
+      result = result.filter((c) => c.title.toLowerCase().includes(q));
+    }
+    if (filter === 'active') {
+      result = result.filter((c) => c.total_items === 0 || c.done_items < c.total_items);
+    } else if (filter === 'done') {
+      result = result.filter((c) => c.total_items > 0 && c.done_items === c.total_items);
+    }
+    return result;
+  }, [checklists, query, filter]);
 
   const add = useCallback(
     async (title: string, description?: string | null) => {
@@ -51,5 +68,5 @@ export function useChecklists() {
     [db, load],
   );
 
-  return { checklists, loading, add, update, remove, refresh: load };
+  return { checklists: filtered, loading, query, setQuery, filter, setFilter, add, update, remove, refresh: load };
 }
