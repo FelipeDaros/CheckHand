@@ -14,11 +14,11 @@ Plataformas: Android e iOS.
 | 1 | Banco de dados e migrations | [0001-database-setup.md](./0001-database-setup.md) | `Concluído` |
 | 2 | Navegação (Expo Router) | [0002-navigation-setup.md](./0002-navigation-setup.md) | `Concluído` |
 | 3 | CRUD de Checklists | [0003-checklist-crud.md](./0003-checklist-crud.md) | `Concluído` |
-| 4 | Gerenciamento de Itens | [0004-item-management.md](./0004-item-management.md) | `Em progresso` |
-| 5 | Autenticação local (PIN) | [0005-local-auth.md](./0005-local-auth.md) | `Pendente` |
-| 6 | Busca e filtro | [0006-search-filter.md](./0006-search-filter.md) | `Pendente` |
-| 7 | Data de prazo (due date) | [0007-due-date.md](./0007-due-date.md) | `Pendente` |
-| 8 | Tela de Configurações | [0008-settings.md](./0008-settings.md) | `Pendente` |
+| 4 | Gerenciamento de Itens | [0004-item-management.md](./0004-item-management.md) | `Concluído` |
+| 5 | Autenticação local (PIN) | [0005-local-auth.md](./0005-local-auth.md) | `Concluído` |
+| 6 | Busca e filtro | [0006-search-filter.md](./0006-search-filter.md) | `Concluído` |
+| 7 | Data de prazo (due date) | [0007-due-date.md](./0007-due-date.md) | `Concluído` |
+| 8 | Tela de Configurações | [0008-settings.md](./0008-settings.md) | `Concluído` |
 
 ---
 

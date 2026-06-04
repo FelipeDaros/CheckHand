@@ -1,29 +1,24 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useSQLiteContext } from 'expo-sqlite';
-import { getSetting, setSetting } from '@/repositories/settingsRepository';
+import { hasPin, deletePin } from '@/utils/security';
 
 export function useSettings() {
-  const db = useSQLiteContext();
   const [pinEnabled, setPinEnabled] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const load = useCallback(async () => {
-    const val = await getSetting(db, 'pin_enabled');
-    setPinEnabled(val === 'true');
+    const v = await hasPin();
+    setPinEnabled(v);
     setLoading(false);
-  }, [db]);
+  }, []);
 
   useEffect(() => {
     load();
   }, [load]);
 
-  const togglePin = useCallback(
-    async (enabled: boolean) => {
-      await setSetting(db, 'pin_enabled', enabled ? 'true' : 'false');
-      setPinEnabled(enabled);
-    },
-    [db],
-  );
+  const togglePin = useCallback(async (enabled: boolean) => {
+    if (!enabled) await deletePin();
+    setPinEnabled(enabled);
+  }, []);
 
-  return { pinEnabled, loading, togglePin };
+  return { pinEnabled, loading, togglePin, refresh: load };
 }

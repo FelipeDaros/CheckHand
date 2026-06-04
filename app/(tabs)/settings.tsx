@@ -1,7 +1,8 @@
 import { Alert, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import Constants from 'expo-constants';
 import { useSQLiteContext } from 'expo-sqlite';
+import { useCallback } from 'react';
 import { SettingsRow, SettingsSection } from '@/components/SettingsRow';
 import { useSettings } from '@/hooks/useSettings';
 import { colors, spacing, typography } from '@/theme';
@@ -9,7 +10,9 @@ import { colors, spacing, typography } from '@/theme';
 export default function SettingsScreen() {
   const router = useRouter();
   const db = useSQLiteContext();
-  const { pinEnabled, loading, togglePin } = useSettings();
+  const { pinEnabled, loading, refresh } = useSettings();
+
+  useFocusEffect(useCallback(() => { refresh(); }, [refresh]));
 
   function handlePinToggle(value: boolean) {
     if (value) {
@@ -22,7 +25,7 @@ export default function SettingsScreen() {
   function handleClearData() {
     Alert.alert(
       'Limpar todos os dados',
-      'Esta ação é irreversível. Todas as checklists, itens e configurações serão apagados.',
+      'Esta ação é irreversível. Todas as checklists e itens serão apagados.',
       [
         { text: 'Cancelar', style: 'cancel' },
         {
@@ -68,7 +71,10 @@ export default function SettingsScreen() {
 
       <SettingsSection title="Dados">
         <TouchableOpacity onPress={handleClearData}>
-          <SettingsRow label="Limpar todos os dados" description="Remove checklists, itens e configurações" />
+          <SettingsRow
+            label="Limpar todos os dados"
+            description="Remove todas as checklists e itens"
+          />
         </TouchableOpacity>
       </SettingsSection>
 
