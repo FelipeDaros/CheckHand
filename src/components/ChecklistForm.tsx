@@ -108,10 +108,11 @@ export function ChecklistForm({
           mode="date"
           display={Platform.OS === 'ios' ? 'spinner' : 'default'}
           minimumDate={new Date()}
-          onChange={(_, selected) => {
-            setShowPicker(Platform.OS === 'ios');
-            if (selected) setDueDate(dateToUnix(selected));
+          onValueChange={(date) => {
+            setShowPicker(false);
+            if (date) setDueDate(dateToUnix(date));
           }}
+          onDismiss={() => setShowPicker(false)}
         />
       )}
 
