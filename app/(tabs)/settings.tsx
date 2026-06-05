@@ -1,4 +1,5 @@
 import { Alert, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
+import { CaretRight } from 'phosphor-react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
 import Constants from 'expo-constants';
 import { useSQLiteContext } from 'expo-sqlite';
@@ -91,6 +92,13 @@ export default function SettingsScreen() {
             />
           }
         />
+        <TouchableOpacity onPress={() => router.push('/water-settings')}>
+          <SettingsRow
+            label="Hidratação"
+            description="Meta diária, lembretes e intervalo de água"
+            right={<CaretRight size={18} color={colors.mute} />}
+          />
+        </TouchableOpacity>
       </SettingsSection>
 
       <SettingsSection title="Sobre">

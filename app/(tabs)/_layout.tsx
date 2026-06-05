@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { CheckSquare, Gear } from 'phosphor-react-native';
+import { CheckSquare, Drop, Gear } from 'phosphor-react-native';
 import { useNotificationContext } from '@/contexts/NotificationContext';
 import { colors } from '@/theme';
 
@@ -26,6 +26,13 @@ export default function TabsLayout() {
         options={{
           title: 'Checklists',
           tabBarIcon: ({ color }) => <CheckSquare size={24} color={color} weight="regular" />,
+        }}
+      />
+      <Tabs.Screen
+        name="water"
+        options={{
+          title: 'Água',
+          tabBarIcon: ({ color }) => <Drop size={24} color={color} weight="regular" />,
         }}
       />
       <Tabs.Screen

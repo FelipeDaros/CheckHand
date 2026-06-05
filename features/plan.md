@@ -19,7 +19,8 @@ Plataformas: Android e iOS.
 | 6 | Busca e filtro | [0006-search-filter.md](./0006-search-filter.md) | `Concluído` |
 | 7 | Data de prazo (due date) | [0007-due-date.md](./0007-due-date.md) | `Concluído` |
 | 8 | Tela de Configurações | [0008-settings.md](./0008-settings.md) | `Concluído` |
-| 9 | Notificações Locais | [0009-notifications/](./0009-notifications/) | `Pendente` |
+| 9 | Notificações Locais | [0009-notifications/](./0009-notifications/) | `Concluído` |
+| 10 | Water Tracker (Hidratação) | [0010-water-tracker/](./0010-water-tracker/) | `Pendente` |
 
 ---
 

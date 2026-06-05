@@ -146,6 +146,10 @@ function RootNavigator() {
             name="pin"
             options={{ title: '', headerShown: false }}
           />
+          <Stack.Screen
+            name="water-settings"
+            options={{ title: 'Hidratação' }}
+          />
         </Stack>
       </SafeAreaView>
     </NotificationContext.Provider>

@@ -1,7 +1,7 @@
 import { SQLiteDatabase } from 'expo-sqlite';
 
 export async function migrateDbIfNeeded(db: SQLiteDatabase) {
-  const DATABASE_VERSION = 2;
+  const DATABASE_VERSION = 3;
   const result = await db.getFirstAsync<{ user_version: number }>('PRAGMA user_version');
   let currentVersion = result?.user_version ?? 0;
 
@@ -41,6 +41,17 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
   if (currentVersion === 1) {
     await db.execAsync('ALTER TABLE checklists ADD COLUMN notification_id TEXT;');
     currentVersion = 2;
+  }
+
+  if (currentVersion === 2) {
+    await db.execAsync(`
+      CREATE TABLE IF NOT EXISTS water_log (
+        id        INTEGER PRIMARY KEY AUTOINCREMENT,
+        amount_ml INTEGER NOT NULL,
+        logged_at INTEGER NOT NULL DEFAULT (unixepoch())
+      );
+    `);
+    currentVersion = 3;
   }
 
   await db.execAsync(`PRAGMA user_version = ${DATABASE_VERSION}`);
