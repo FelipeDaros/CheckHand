@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
     color: colors.mute,
   },
   countDone: {
-    color: colors.accentGreen,
+    color: colors.primary,
   },
   description: {
     ...typography.bodySm,

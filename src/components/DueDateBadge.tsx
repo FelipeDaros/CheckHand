@@ -12,7 +12,7 @@ export function DueDateBadge({ dueDate }: Props) {
   const soon = !overdue && isSoon(dueDate);
 
   const bg = overdue ? colors.accentRedSoft : soon ? colors.accentBlueSoft : colors.surfaceSoft;
-  const fg = overdue ? colors.accentRed : soon ? colors.accentBlue : colors.mute;
+  const fg = overdue ? colors.accentRed : soon ? colors.primary : colors.mute;
 
   return (
     <View style={[styles.badge, { backgroundColor: bg }]}>
