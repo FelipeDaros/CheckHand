@@ -196,21 +196,19 @@ if (newTotal >= goalMl) {
 }
 ```
 
-### Reagendar ao abrir o app em novo dia [Não Iniciada ⏳]
+### Reagendar ao abrir o app em novo dia [Concluído ✅]
 
-Em `useWater`, no `useEffect` de carregamento:
+Em `useWater`, o `useFocusEffect` verifica `water_notif_last_day` a cada foco de tela:
 
 ```typescript
-const lastDay = await getSetting(db, 'water_notif_last_day');
-const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
-if (lastDay !== today && notifEnabled) {
+if (lastDay !== today) {
   await scheduleWaterNotifications(db, startH, endH, intervalH);
 }
 ```
 
-### Integrar WaterSettings na tela water.tsx [Não Iniciada ⏳]
+### Integrar WaterSettings na tela water.tsx [Concluído ✅]
 
-Botão de engrenagem no header da tela abre `WaterSettings` como modal ou sheet inferior. Ao fechar, `useWater` re-carrega as configurações.
+Botão de engrenagem no header abre `app/water-settings.tsx`. O hook usa `useFocusEffect` para recarregar as configurações ao voltar, garantindo que a tela principal reflete os valores salvos.
 
 ---
 
@@ -281,6 +279,35 @@ Gera os últimos 7 dias a partir de hoje, cruzando `history` (dias anteriores) c
 
 ---
 
+## FASE 7 — Atalhos de adição configuráveis [Concluída ✅]
+
+Entrega: os dois botões de adição rápida (+Xml, +Yml) são parametrizáveis nas configurações.
+
+### Tipo WaterSettings exportado [Concluído ✅]
+
+O tipo `Settings` foi renomeado para `WaterSettings` e exportado de `useWater.ts`, eliminando duplicações em `WaterSettings.tsx` e `water-settings.tsx`.
+
+### Campos `quick1` e `quick2` [Concluído ✅]
+
+- Defaults: 250ml e 500ml
+- Chaves no banco: `water_quick_1`, `water_quick_2`
+- `loadSettingsFromDb` carrega ambas; `saveSettings` persiste ambas
+- Validação: 50–2.000ml
+
+### UI na tela de configurações [Concluído ✅]
+
+Seção "Atalhos de adição" em `WaterSettings.tsx` com dois `TextInput` lado a lado (Botão 1 / Botão 2).
+
+### water.tsx usa valores dinâmicos [Concluído ✅]
+
+`QUICK_AMOUNTS` fixo removido; substituído por `[settings.quick1, settings.quick2]` lidos do hook em tempo real.
+
+### Correção: configurações não persistiam [Concluído ✅]
+
+`water-settings.tsx` renderizava `WaterSettings` antes do banco ser lido, inicializando os `useState` com defaults. Corrigido com `if (loading) return null` — o componente só monta após o carregamento completo.
+
+---
+
 ## Ordem de execução
 
 ```
@@ -290,4 +317,5 @@ Fase 1 (setup)
             └── Fase 4 (settings + notifs)  ←
                     └── Fase 5 (histórico)
                             └── Fase 6 (ofensiva + semana)
+                                    └── Fase 7 (atalhos configuráveis)
 ```

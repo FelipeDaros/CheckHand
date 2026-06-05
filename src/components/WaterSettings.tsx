@@ -11,13 +11,7 @@ import {
 } from 'react-native';
 import { colors, rounded, spacing, typography } from '@/theme';
 
-type Settings = {
-  goalMl: number;
-  notifEnabled: boolean;
-  intervalH: number;
-  startH: number;
-  endH: number;
-};
+import type { WaterSettings as Settings } from '@/hooks/useWater';
 
 type Props = {
   initialSettings: Settings;
@@ -83,6 +77,8 @@ const stepperStyles = StyleSheet.create({
 
 export function WaterSettings({ initialSettings, onSave }: Props) {
   const [goalInput, setGoalInput] = useState(String(initialSettings.goalMl));
+  const [quick1Input, setQuick1Input] = useState(String(initialSettings.quick1));
+  const [quick2Input, setQuick2Input] = useState(String(initialSettings.quick2));
   const [notifEnabled, setNotifEnabled] = useState(initialSettings.notifEnabled);
   const [intervalH, setIntervalH] = useState(initialSettings.intervalH);
   const [startH, setStartH] = useState(initialSettings.startH);
@@ -95,12 +91,18 @@ export function WaterSettings({ initialSettings, onSave }: Props) {
       Alert.alert('Meta inválida', 'Insira um valor entre 100 e 10.000 ml.');
       return;
     }
+    const q1 = parseInt(quick1Input, 10);
+    const q2 = parseInt(quick2Input, 10);
+    if (!q1 || q1 < 50 || q1 > 2000 || !q2 || q2 < 50 || q2 > 2000) {
+      Alert.alert('Atalho inválido', 'Os atalhos devem estar entre 50 e 2.000 ml.');
+      return;
+    }
     if (startH >= endH) {
       Alert.alert('Horário inválido', 'O horário de início deve ser anterior ao de fim.');
       return;
     }
     setSaving(true);
-    await onSave({ goalMl: goal, notifEnabled, intervalH, startH, endH });
+    await onSave({ goalMl: goal, notifEnabled, intervalH, startH, endH, quick1: q1, quick2: q2 });
     setSaving(false);
   }
 
@@ -119,6 +121,42 @@ export function WaterSettings({ initialSettings, onSave }: Props) {
             placeholderTextColor={colors.stone}
           />
           <Text style={styles.unit}>ml</Text>
+        </View>
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Atalhos de adição</Text>
+        <View style={styles.quickRow}>
+          <View style={styles.quickField}>
+            <Text style={styles.quickLabel}>Botão 1</Text>
+            <View style={styles.field}>
+              <TextInput
+                style={styles.input}
+                value={quick1Input}
+                onChangeText={setQuick1Input}
+                keyboardType="numeric"
+                maxLength={4}
+                placeholder="250"
+                placeholderTextColor={colors.stone}
+              />
+              <Text style={styles.unit}>ml</Text>
+            </View>
+          </View>
+          <View style={styles.quickField}>
+            <Text style={styles.quickLabel}>Botão 2</Text>
+            <View style={styles.field}>
+              <TextInput
+                style={styles.input}
+                value={quick2Input}
+                onChangeText={setQuick2Input}
+                keyboardType="numeric"
+                maxLength={4}
+                placeholder="500"
+                placeholderTextColor={colors.stone}
+              />
+              <Text style={styles.unit}>ml</Text>
+            </View>
+          </View>
         </View>
       </View>
 
@@ -185,6 +223,9 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   field: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  quickRow: { flexDirection: 'row', gap: spacing.md },
+  quickField: { flex: 1, gap: spacing.xs },
+  quickLabel: { ...typography.captionMd, color: colors.mute },
   input: {
     flex: 1,
     ...typography.bodyMd,

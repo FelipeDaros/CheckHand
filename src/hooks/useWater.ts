@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useFocusEffect } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import {
   getTodayTotal,
@@ -16,23 +17,29 @@ const DEFAULTS = {
   intervalH: 2,
   startH: 8,
   endH: 22,
+  quick1: 250,
+  quick2: 500,
 };
 
-type Settings = {
+export type WaterSettings = {
   goalMl: number;
   notifEnabled: boolean;
   intervalH: number;
   startH: number;
   endH: number;
+  quick1: number;
+  quick2: number;
 };
 
-async function loadSettingsFromDb(db: ReturnType<typeof useSQLiteContext>): Promise<Settings> {
-  const [goalStr, notifStr, intervalStr, startStr, endStr] = await Promise.all([
+async function loadSettingsFromDb(db: ReturnType<typeof useSQLiteContext>): Promise<WaterSettings> {
+  const [goalStr, notifStr, intervalStr, startStr, endStr, q1Str, q2Str] = await Promise.all([
     getSetting(db, 'water_goal_ml'),
     getSetting(db, 'water_notif_enabled'),
     getSetting(db, 'water_notif_interval_h'),
     getSetting(db, 'water_notif_start_h'),
     getSetting(db, 'water_notif_end_h'),
+    getSetting(db, 'water_quick_1'),
+    getSetting(db, 'water_quick_2'),
   ]);
   return {
     goalMl: goalStr ? parseInt(goalStr, 10) : DEFAULTS.goalMl,
@@ -40,6 +47,8 @@ async function loadSettingsFromDb(db: ReturnType<typeof useSQLiteContext>): Prom
     intervalH: intervalStr ? parseInt(intervalStr, 10) : DEFAULTS.intervalH,
     startH: startStr ? parseInt(startStr, 10) : DEFAULTS.startH,
     endH: endStr ? parseInt(endStr, 10) : DEFAULTS.endH,
+    quick1: q1Str ? parseInt(q1Str, 10) : DEFAULTS.quick1,
+    quick2: q2Str ? parseInt(q2Str, 10) : DEFAULTS.quick2,
   };
 }
 
@@ -47,12 +56,14 @@ export function useWater() {
   const db = useSQLiteContext();
   const [todayMl, setTodayMl] = useState(0);
   const [history, setHistory] = useState<DayHistory[]>([]);
-  const [settings, setSettings] = useState<Settings>({
+  const [settings, setSettings] = useState<WaterSettings>({
     goalMl: DEFAULTS.goalMl,
     notifEnabled: true,
     intervalH: DEFAULTS.intervalH,
     startH: DEFAULTS.startH,
     endH: DEFAULTS.endH,
+    quick1: DEFAULTS.quick1,
+    quick2: DEFAULTS.quick2,
   });
   const [loading, setLoading] = useState(true);
 
@@ -66,31 +77,33 @@ export function useWater() {
     return total;
   }, [db]);
 
-  useEffect(() => {
-    async function init() {
-      setLoading(true);
-      const s = await loadSettingsFromDb(db);
-      setSettings(s);
+  useFocusEffect(
+    useCallback(() => {
+      async function init() {
+        setLoading(true);
+        const s = await loadSettingsFromDb(db);
+        setSettings(s);
 
-      const [total, hist] = await Promise.all([
-        getTodayTotal(db),
-        getHistory(db, s.goalMl),
-      ]);
-      setTodayMl(total);
-      setHistory(hist);
+        const [total, hist] = await Promise.all([
+          getTodayTotal(db),
+          getHistory(db, s.goalMl),
+        ]);
+        setTodayMl(total);
+        setHistory(hist);
 
-      if (s.notifEnabled && total < s.goalMl) {
-        const lastDay = (await getSetting(db, 'water_notif_last_day')) ?? '';
-        const today = new Date().toISOString().slice(0, 10);
-        if (lastDay !== today) {
-          await scheduleWaterNotifications(db, s.startH, s.endH, s.intervalH);
+        if (s.notifEnabled && total < s.goalMl) {
+          const lastDay = (await getSetting(db, 'water_notif_last_day')) ?? '';
+          const today = new Date().toISOString().slice(0, 10);
+          if (lastDay !== today) {
+            await scheduleWaterNotifications(db, s.startH, s.endH, s.intervalH);
+          }
         }
-      }
 
-      setLoading(false);
-    }
-    init();
-  }, [db]);
+        setLoading(false);
+      }
+      init();
+    }, [db]),
+  );
 
   const add = useCallback(
     async (ml: number) => {
@@ -112,13 +125,15 @@ export function useWater() {
   }, [db, loadToday, settings]);
 
   const saveSettings = useCallback(
-    async (next: Settings) => {
+    async (next: WaterSettings) => {
       await Promise.all([
         setSetting(db, 'water_goal_ml', String(next.goalMl)),
         setSetting(db, 'water_notif_enabled', next.notifEnabled ? '1' : '0'),
         setSetting(db, 'water_notif_interval_h', String(next.intervalH)),
         setSetting(db, 'water_notif_start_h', String(next.startH)),
         setSetting(db, 'water_notif_end_h', String(next.endH)),
+        setSetting(db, 'water_quick_1', String(next.quick1)),
+        setSetting(db, 'water_quick_2', String(next.quick2)),
       ]);
       setSettings(next);
 

@@ -13,7 +13,6 @@ import { WaterGlass } from '@/components/WaterGlass';
 import { colors, rounded, spacing, typography } from '@/theme';
 import type { DayHistory } from '@/repositories/waterRepository';
 
-const QUICK_AMOUNTS = [250, 500];
 
 const DAYS_PT = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'];
 const WEEK_LABELS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
@@ -238,7 +237,8 @@ const weekStyles = StyleSheet.create({
 // ─── Tela principal ───────────────────────────────────────────────────────────
 
 export default function WaterScreen() {
-  const { todayMl, goalMl, progress, isComplete, history, loading, add, reset } = useWater();
+  const { todayMl, goalMl, progress, isComplete, history, settings, loading, add, reset } = useWater();
+  const quickAmounts = [settings.quick1, settings.quick2];
   const [customInput, setCustomInput] = useState('');
   const [showCustom, setShowCustom] = useState(false);
 
@@ -287,7 +287,7 @@ export default function WaterScreen() {
 
       {/* Quick add buttons */}
       <View style={styles.quickRow}>
-        {QUICK_AMOUNTS.map((ml) => (
+        {quickAmounts.map((ml) => (
           <TouchableOpacity
             key={ml}
             style={styles.quickBtn}
