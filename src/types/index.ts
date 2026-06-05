@@ -3,6 +3,7 @@ export type Checklist = {
   title: string;
   description: string | null;
   due_date: number | null;
+  notification_id: string | null;
   created_at: number;
   updated_at: number;
 };

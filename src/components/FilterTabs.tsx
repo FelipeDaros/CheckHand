@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
     color: colors.body,
   },
   labelActive: {
-    color: colors.onPrimary,
+    color: colors.surfaceCard,
     fontWeight: '700',
   },
 });

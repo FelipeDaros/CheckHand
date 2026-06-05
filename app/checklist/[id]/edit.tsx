@@ -4,6 +4,8 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import { ChecklistForm } from '@/components/ChecklistForm';
 import { useChecklists } from '@/hooks/useChecklists';
+import { useNotifications } from '@/hooks/useNotifications';
+import { useSettings } from '@/hooks/useSettings';
 import { getChecklistById } from '@/repositories/checklistRepository';
 import { colors } from '@/theme';
 import type { ChecklistWithProgress } from '@/types';
@@ -13,6 +15,8 @@ export default function EditChecklistScreen() {
   const router = useRouter();
   const db = useSQLiteContext();
   const { update } = useChecklists();
+  const { scheduleNotification, cancelNotification } = useNotifications();
+  const { notificationsEnabled } = useSettings();
   const [checklist, setChecklist] = useState<ChecklistWithProgress | null>(null);
 
   useEffect(() => {
@@ -20,7 +24,24 @@ export default function EditChecklistScreen() {
   }, [db, id]);
 
   async function handleSubmit(title: string, description: string | null, dueDate: number | null) {
-    await update(Number(id), title, description, dueDate);
+    const prevDueDate = checklist!.due_date;
+    const prevNotifId = checklist!.notification_id;
+    let newNotifId: string | null = prevNotifId;
+
+    const dueDateChanged = dueDate !== prevDueDate;
+
+    if (dueDateChanged && prevNotifId) {
+      await cancelNotification(prevNotifId);
+      newNotifId = null;
+    }
+
+    if (dueDate && dueDateChanged && notificationsEnabled) {
+      newNotifId = await scheduleNotification(Number(id), title, dueDate);
+    } else if (!dueDate) {
+      newNotifId = null;
+    }
+
+    await update(Number(id), title, description, dueDate, newNotifId);
     router.back();
   }
 

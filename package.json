@@ -8,6 +8,7 @@
     "expo-constants": "~56.0.16",
     "expo-crypto": "^56.0.4",
     "expo-linking": "~56.0.13",
+    "expo-notifications": "~56.0.15",
     "expo-router": "~56.2.8",
     "expo-secure-store": "^56.0.4",
     "expo-sqlite": "~56.0.4",
@@ -30,7 +31,9 @@
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "clean": "expo r -c",
+    "build-android": "cd android && ./gradlew assembleRelease"
   },
   "private": true
 }

@@ -61,7 +61,7 @@ export default function ChecklistsScreen() {
         onPress={() => router.push('/checklist/new')}
         activeOpacity={0.8}
       >
-        <Plus size={28} color={colors.onPrimary} weight="bold" />
+        <Plus size={28} color={colors.surfaceCard} weight="bold" />
       </TouchableOpacity>
     </View>
   );

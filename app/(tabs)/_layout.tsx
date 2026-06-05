@@ -1,8 +1,11 @@
 import { Tabs } from 'expo-router';
 import { CheckSquare, Gear } from 'phosphor-react-native';
+import { useNotificationContext } from '@/contexts/NotificationContext';
 import { colors } from '@/theme';
 
 export default function TabsLayout() {
+  const { notifBlocked } = useNotificationContext();
+
   return (
     <Tabs
       screenOptions={{
@@ -15,6 +18,7 @@ export default function TabsLayout() {
         headerStyle: { backgroundColor: colors.canvas },
         headerTintColor: colors.ink,
         headerShadowVisible: false,
+        headerStatusBarHeight: notifBlocked ? 0 : undefined,
       }}
     >
       <Tabs.Screen

@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
   checkmark: {
     fontSize: 13,
     fontWeight: '700',
-    color: colors.onPrimary,
+    color: colors.surfaceCard,
     lineHeight: 16,
   },
   content: {

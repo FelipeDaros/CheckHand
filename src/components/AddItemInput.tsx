@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Platform, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { PlusCircle } from 'phosphor-react-native';
 import { colors, rounded, spacing, typography } from '@/theme';
 
@@ -10,6 +11,7 @@ type Props = {
 export function AddItemInput({ onAdd }: Props) {
   const [text, setText] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const insets = useSafeAreaInsets();
 
   async function handleSubmit() {
     const title = text.trim();
@@ -23,7 +25,7 @@ export function AddItemInput({ onAdd }: Props) {
   const canSubmit = text.trim().length > 0 && !submitting;
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingBottom: Math.max(insets.bottom, spacing.sm) }]}>
       <TextInput
         style={styles.input}
         value={text}
@@ -50,8 +52,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-    paddingBottom: Platform.OS === 'ios' ? spacing.xl : spacing.sm,
+    paddingTop: spacing.sm,
     gap: spacing.sm,
     backgroundColor: colors.surfaceCard,
     borderTopWidth: 1,

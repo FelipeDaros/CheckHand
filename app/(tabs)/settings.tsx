@@ -5,20 +5,31 @@ import { useSQLiteContext } from 'expo-sqlite';
 import { useCallback } from 'react';
 import { SettingsRow, SettingsSection } from '@/components/SettingsRow';
 import { useSettings } from '@/hooks/useSettings';
+import { useNotifications } from '@/hooks/useNotifications';
+import { updateNotificationId } from '@/repositories/checklistRepository';
 import { colors, spacing, typography } from '@/theme';
 
 export default function SettingsScreen() {
   const router = useRouter();
   const db = useSQLiteContext();
-  const { pinEnabled, loading, refresh } = useSettings();
+  const { pinEnabled, notificationsEnabled, loading, refresh, toggleNotifications } = useSettings();
+  const { cancelAllNotifications, checkPermission } = useNotifications();
 
-  useFocusEffect(useCallback(() => { refresh(); }, [refresh]));
+  useFocusEffect(useCallback(() => { refresh(); checkPermission(); }, [refresh, checkPermission]));
 
   function handlePinToggle(value: boolean) {
     if (value) {
       router.push('/pin?mode=create');
     } else {
       router.push('/pin?mode=disable');
+    }
+  }
+
+  async function handleNotificationsToggle(value: boolean) {
+    await toggleNotifications(value);
+    if (!value) {
+      await cancelAllNotifications();
+      await db.execAsync('UPDATE checklists SET notification_id = NULL');
     }
   }
 
@@ -32,6 +43,7 @@ export default function SettingsScreen() {
           text: 'Limpar',
           style: 'destructive',
           onPress: async () => {
+            await cancelAllNotifications();
             await db.execAsync('DELETE FROM items; DELETE FROM checklists; DELETE FROM app_settings;');
             Alert.alert('Concluído', 'Todos os dados foram removidos.');
           },
@@ -63,6 +75,22 @@ export default function SettingsScreen() {
             <SettingsRow label="Alterar PIN" />
           </TouchableOpacity>
         )}
+      </SettingsSection>
+
+      <SettingsSection title="Preferências">
+        <SettingsRow
+          label="Notificações"
+          description="Receber lembretes no dia do prazo das checklists"
+          right={
+            <Switch
+              value={notificationsEnabled}
+              onValueChange={handleNotificationsToggle}
+              disabled={loading}
+              trackColor={{ false: colors.hairline, true: colors.primary }}
+              thumbColor={colors.surfaceCard}
+            />
+          }
+        />
       </SettingsSection>
 
       <SettingsSection title="Sobre">

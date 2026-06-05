@@ -7,6 +7,7 @@ import {
   updateChecklist,
   deleteChecklist,
 } from '@/repositories/checklistRepository';
+import { cancelChecklistNotification } from '@/repositories/notificationRepository';
 import type { ChecklistWithProgress } from '@/types';
 import type { FilterOption } from '@/components/FilterTabs';
 
@@ -45,16 +46,23 @@ export function useChecklists() {
   }, [checklists, query, filter]);
 
   const add = useCallback(
-    async (title: string, description?: string | null, dueDate?: number | null) => {
-      await createChecklist(db, title, description, dueDate);
+    async (title: string, description?: string | null, dueDate?: number | null): Promise<number> => {
+      const id = await createChecklist(db, title, description, dueDate);
       await load();
+      return id;
     },
     [db, load],
   );
 
   const update = useCallback(
-    async (id: number, title: string, description?: string | null, dueDate?: number | null) => {
-      await updateChecklist(db, id, title, description, dueDate);
+    async (
+      id: number,
+      title: string,
+      description?: string | null,
+      dueDate?: number | null,
+      notificationId?: string | null,
+    ) => {
+      await updateChecklist(db, id, title, description, dueDate, notificationId);
       await load();
     },
     [db, load],
@@ -62,10 +70,14 @@ export function useChecklists() {
 
   const remove = useCallback(
     async (id: number) => {
+      const checklist = checklists.find((c) => c.id === id);
+      if (checklist?.notification_id) {
+        await cancelChecklistNotification(checklist.notification_id);
+      }
       await deleteChecklist(db, id);
       await load();
     },
-    [db, load],
+    [db, load, checklists],
   );
 
   return { checklists: filtered, loading, query, setQuery, filter, setFilter, add, update, remove, refresh: load };

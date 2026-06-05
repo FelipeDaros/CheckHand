@@ -46,12 +46,26 @@ export async function updateChecklist(
   title: string,
   description?: string | null,
   dueDate?: number | null,
+  notificationId?: string | null,
 ): Promise<void> {
   await db.runAsync(
-    'UPDATE checklists SET title = ?, description = ?, due_date = ?, updated_at = unixepoch() WHERE id = ?',
+    'UPDATE checklists SET title = ?, description = ?, due_date = ?, notification_id = ?, updated_at = unixepoch() WHERE id = ?',
     title,
     description ?? null,
     dueDate ?? null,
+    notificationId ?? null,
+    id,
+  );
+}
+
+export async function updateNotificationId(
+  db: SQLiteDatabase,
+  id: number,
+  notificationId: string | null,
+): Promise<void> {
+  await db.runAsync(
+    'UPDATE checklists SET notification_id = ? WHERE id = ?',
+    notificationId,
     id,
   );
 }

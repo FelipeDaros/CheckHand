@@ -108,11 +108,10 @@ export function ChecklistForm({
           mode="date"
           display={Platform.OS === 'ios' ? 'spinner' : 'default'}
           minimumDate={new Date()}
-          onValueChange={(date) => {
-            setShowPicker(false);
-            if (date) setDueDate(dateToUnix(date));
+          onChange={(event, date) => {
+            if (Platform.OS === 'android') setShowPicker(false);
+            if (event.type === 'set' && date) setDueDate(dateToUnix(date));
           }}
-          onDismiss={() => setShowPicker(false)}
         />
       )}
 
@@ -126,7 +125,7 @@ export function ChecklistForm({
           disabled={saving}
         >
           {saving ? (
-            <ActivityIndicator size="small" color={colors.onPrimary} />
+            <ActivityIndicator size="small" color={colors.surfaceCard} />
           ) : (
             <Text style={styles.btnSubmitText}>{submitLabel}</Text>
           )}
@@ -232,7 +231,7 @@ const styles = StyleSheet.create({
   },
   btnSubmitText: {
     ...typography.buttonMd,
-    color: colors.onPrimary,
+    color: colors.surfaceCard,
   },
   btnDisabled: {
     opacity: 0.6,
