@@ -1,7 +1,7 @@
 import { SQLiteDatabase } from 'expo-sqlite';
 
 export async function migrateDbIfNeeded(db: SQLiteDatabase) {
-  const DATABASE_VERSION = 3;
+  const DATABASE_VERSION = 4;
   const result = await db.getFirstAsync<{ user_version: number }>('PRAGMA user_version');
   let currentVersion = result?.user_version ?? 0;
 
@@ -52,6 +52,22 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
       );
     `);
     currentVersion = 3;
+  }
+
+  if (currentVersion === 3) {
+    await db.execAsync(`
+      CREATE TABLE IF NOT EXISTS scheduled_notifications (
+        id               INTEGER PRIMARY KEY AUTOINCREMENT,
+        title            TEXT    NOT NULL,
+        body             TEXT    NOT NULL DEFAULT 'Lembrete!',
+        type             TEXT    NOT NULL,
+        config           TEXT    NOT NULL,
+        is_active        INTEGER NOT NULL DEFAULT 1,
+        notification_ids TEXT    NOT NULL DEFAULT '[]',
+        created_at       INTEGER NOT NULL
+      );
+    `);
+    currentVersion = 4;
   }
 
   await db.execAsync(`PRAGMA user_version = ${DATABASE_VERSION}`);

@@ -150,6 +150,10 @@ function RootNavigator() {
             name="water-settings"
             options={{ title: 'Hidratação' }}
           />
+          <Stack.Screen
+            name="notification-form"
+            options={{ title: 'Novo Lembrete', presentation: 'modal' }}
+          />
         </Stack>
       </SafeAreaView>
     </NotificationContext.Provider>

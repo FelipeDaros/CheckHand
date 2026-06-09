@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { CheckSquare, Drop, Gear } from 'phosphor-react-native';
+import { Bell, CheckSquare, Drop, Gear } from 'phosphor-react-native';
 import { useNotificationContext } from '@/contexts/NotificationContext';
 import { colors } from '@/theme';
 
@@ -33,6 +33,13 @@ export default function TabsLayout() {
         options={{
           title: 'Água',
           tabBarIcon: ({ color }) => <Drop size={24} color={color} weight="regular" />,
+        }}
+      />
+      <Tabs.Screen
+        name="notifications"
+        options={{
+          title: 'Lembretes',
+          tabBarIcon: ({ color }) => <Bell size={24} color={color} weight="regular" />,
         }}
       />
       <Tabs.Screen

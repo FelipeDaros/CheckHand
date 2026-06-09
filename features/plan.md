@@ -21,6 +21,7 @@ Plataformas: Android e iOS.
 | 8 | Tela de Configurações | [0008-settings.md](./0008-settings.md) | `Concluído` |
 | 9 | Notificações Locais | [0009-notifications/](./0009-notifications/) | `Concluído` |
 | 10 | Water Tracker (Hidratação) | [0010-water-tracker/](./0010-water-tracker/) | `Pendente` |
+| 11 | Agendador de Notificações | [0011-notification-scheduler/](./0011-notification-scheduler/) | `Pendente` |
 
 ---
 
