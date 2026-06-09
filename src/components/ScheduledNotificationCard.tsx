@@ -7,7 +7,7 @@ import Animated, {
   withDelay,
   withTiming,
 } from 'react-native-reanimated';
-import { scheduleOnRN } from 'react-native-worklets';
+import { runOnJS } from 'react-native-worklets';
 import { TrashIcon } from 'phosphor-react-native';
 import { ScheduledNotification, IntervalConfig, WeeklyConfig, DateConfig } from '@/types';
 import { colors, spacing, typography } from '@/theme';
@@ -62,7 +62,8 @@ export function ScheduledNotificationCard({ notification, index, onToggle, onDel
   function handleDelete() {
     translateX.value = withTiming(400, { duration: 600 });
     opacity.value = withTiming(0, { duration: 600 }, () => {
-      scheduleOnRN(() => onDelete(notification.id));
+      'worklet';
+      runOnJS(onDelete)(notification.id);
     });
   }
 

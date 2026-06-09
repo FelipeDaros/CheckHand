@@ -39,7 +39,11 @@ export default function NotificationFormScreen() {
 
   // Weekly
   const [selectedDays, setSelectedDays] = useState<number[]>([]);
-  const [weeklyTime, setWeeklyTime] = useState(new Date(0, 0, 0, 9, 0));
+  const [weeklyTime, setWeeklyTime] = useState(() => {
+    const d = new Date();
+    d.setHours(9, 0, 0, 0);
+    return d;
+  });
   const [showWeeklyTimePicker, setShowWeeklyTimePicker] = useState(false);
 
   // Date
